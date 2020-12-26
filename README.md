@@ -4,7 +4,7 @@
 
  prerequisite - a locally running mongo db server
 
-## running instructions
+### running instructions
   0. yarn
   1. nav to src folder
   2. node ./controller/server.js
