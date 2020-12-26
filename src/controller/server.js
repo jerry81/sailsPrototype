@@ -21,10 +21,28 @@ router.post('/uploadResume', fileParser, async ctx => {
         const file = ctx.request.files.file
         const {path, name, type} = file
         let fileData = fs.readFileSync(path);
-        let insert_data = {};
+        let insert_data = {name, type};
         insert_data.file_data= Binary(fileData);
         var filesCollection = ctx.app.files;
-        ctx.body = await filesCollection.insertOne(insert_data)
+        const {insertedId} = await filesCollection.insertOne(insert_data)
+        console.log('inserted is ', name, type)
+        ctx.body = { insertedId, name, type } 
+    } catch(err) {
+        console.log(`error ${err.message}`)
+        await ctx.render('error', {message: err.message})
+    }
+})
+
+router.get('/downloadResume/:id/:fileName', async ctx => {
+    try {
+        let params = ctx.params
+        let documentQuery = {"_id": ObjectID(params.id)}; // Used to find the document
+        const file = await ctx.app.files.find(documentQuery).toArray();
+        const path = `../temp/${params.fileName}`
+        await fs.writeFileSync(path, file[0].file_data.buffer)
+        const rs = await fs.createReadStream(path)
+        ctx.attachment(params.fileName)
+        ctx.body = rs
     } catch(err) {
         console.log(`error ${err.message}`)
         await ctx.render('error', {message: err.message})
@@ -35,18 +53,10 @@ router.get("/user/findAll", async function (ctx) {
     ctx.body = await ctx.app.users.find().toArray()
 });
 
-router.get("/paramTest", async function (ctx) {
-    let name = ctx.request.query.name || "World";
-    ctx.body = {message: `Hello ${name}!`}
-});
-
 router.put('/user/:id', async (ctx) => {
     let params = ctx.params
-    console.log('params is ', params)
     let documentQuery = {"_id": ObjectID(params.id)}; // Used to find the document
     let valuesToUpdate = omit(ctx.request.body, '_id');
-    console.log('valuesToUpdate', valuesToUpdate)
-    console.log('documentQuery is ', documentQuery)
     ctx.body = await ctx.app.users.updateOne(documentQuery, { $set: valuesToUpdate });
   }
 )
