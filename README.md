@@ -1,8 +1,8 @@
 # trustana koajs
 
-## nodejs web server with mongo driver
+ nodejs web server with mongo driver
 
-## prerequisite - a locally running mongo db server
+ prerequisite - a locally running mongo db server
 
 ## running instructions
   0. yarn
