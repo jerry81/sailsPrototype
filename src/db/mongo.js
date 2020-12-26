@@ -4,6 +4,7 @@ module.exports = function (app) {
     MongoClient.connect(MONGO_URL, (err, client) => {
         const trustana = client.db('trustana')
         app.users = trustana.collection('users')
+        app.files = trustana.collection('files')
         console.log("Database connection established")
     })
 };
