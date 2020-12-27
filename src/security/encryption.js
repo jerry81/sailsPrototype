@@ -30,10 +30,10 @@ function encrypt(text, key) {
  return { encryptedData: encrypted.toString('hex') };
 }
 
-function decrypt(text, key) {
-    if (!text.encryptedData) return text
+function decrypt(text, key, isFile) {
+    if (!text.encryptedData && !isFile) return text
     if (!key) return 'cannot decrypt'
- let encryptedText = Buffer.from(text.encryptedData, 'hex');
+ let encryptedText = Buffer.from(isFile ? text : text.encryptedData, 'hex');
  let decipher = crypto.createDecipher('aes-256-cbc', Buffer.from(key));
  let decrypted = decipher.update(encryptedText);
  decrypted = Buffer.concat([decrypted, decipher.final()]);

@@ -23,28 +23,35 @@ router.post('/uploadResume', fileParser, async ctx => {
         const {path, name, type} = file
         let fileData = fs.readFileSync(path);
         let insert_data = {name, type};
-        insert_data.file_data= Binary(fileData);
+        const encrypted = encryption.encrypt(
+            Buffer.from(fileData,"utf-8"),
+            password
+        )
+        insert_data.file_data = Binary(
+            encrypted.encryptedData
+        );
         var filesCollection = ctx.app.files;
         const {insertedId} = await filesCollection.insertOne(insert_data)
         ctx.body = { insertedId, name, type } 
     } catch(err) {
-        await ctx.render('error', {message: err.message})
+        console.log('error is ', err)
     }
 })
 
 router.get('/downloadResume/:id/:fileName', async ctx => {
     try {
+        const password = ctx.get('decryption-token')
         let params = ctx.params
         let documentQuery = {"_id": ObjectID(params.id)}; // Used to find the document
         const file = await ctx.app.files.find(documentQuery).toArray();
         const path = `../temp/${params.fileName}`
-        await fs.writeFileSync(path, file[0].file_data.buffer)
+        const decryptedBuffer = encryption.decrypt(file[0].file_data.buffer.toString(), password, true)
+        await fs.writeFileSync(path, decryptedBuffer)
         const rs = await fs.createReadStream(path)
         ctx.attachment(params.fileName)
         ctx.body = rs
     } catch(err) {
-        console.log(`error ${err.message}`)
-        await ctx.render('error', {message: err.message})
+        console.log(`error ${err.message}`, err)
     }
 })
 
@@ -70,7 +77,6 @@ router.put('/user/:id', async (ctx) => {
 router.post("/user", async (ctx) => {
     const password = ctx.get('decryption-token')
     let newUser = encryption.encryptObject(ctx.request.body, password)
-    console.log('newUser is ', newUser)
     ctx.body = await ctx.app.users.insert(newUser);
 });
 
