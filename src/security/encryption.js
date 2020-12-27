@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const algorithm = 'aes-256-cbc';
-const iv = 'abcdefg'
+const constants = require('../constants/constants')
 
 function iterateObject(x, password, functionKey) {
     const shallowClone = {...x}
@@ -40,4 +40,15 @@ function decrypt(text, key, isFile) {
  return decrypted.toString();
 }
 
-module.exports = {encrypt, decrypt, encryptObject, decryptObject}
+function stringifyToken(request) {
+    console.log('stringifying token ', request)
+  return encrypt(JSON.stringify(request), constants.EX2_ENCRYPTION_KEY) 
+}
+
+function parseToken(stringified) {
+    const decrypted = decrypt(stringified, constants.EX2_ENCRYPTION_KEY)
+    console.log('decrypted is ', decrypted)
+    return JSON.parse(decrypted)
+  }
+
+module.exports = {encrypt, decrypt, encryptObject, decryptObject, stringifyToken, parseToken}

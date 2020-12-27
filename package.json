@@ -16,6 +16,7 @@
     "koa-logger": "^2.0.1",
     "koa-router": "^10.0.0",
     "lodash": "^4.17.20",
+    "moment": "^2.29.1",
     "mongodb": "^3.6.3"
   }
 }

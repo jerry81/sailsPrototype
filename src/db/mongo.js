@@ -5,6 +5,8 @@ module.exports = function (app) {
         const trustana = client.db('trustana')
         app.users = trustana.collection('users')
         app.files = trustana.collection('files')
+        app.sensitiveData = trustana.collection('sensitiveData')
+        app.secrets = trustana.collection('secrets')
         console.log("Database connection established")
     })
 };

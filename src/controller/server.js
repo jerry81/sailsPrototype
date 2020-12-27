@@ -8,12 +8,13 @@ const fileParser = require('koa-body')({multipart: true, uploadDir: '.'})
 const Binary = require("mongodb").Binary;
 const fs = require('fs')
 const encryption = require('../security/encryption')
+const constants = require('../constants/constants')
+const moment = require('moment')
 
 const app = new Koa();
 require("../db/mongo")(app);
 app.use(logger());
 const router = new Router();
-
 app.use(BodyParser());
 
 router.post('/uploadResume', fileParser, async ctx => {
@@ -80,7 +81,44 @@ router.post("/user", async (ctx) => {
     ctx.body = await ctx.app.users.insert(newUser);
 });
 
+router.post('/ex2/sensitiveData', async (ctx) => {
+    let sensitiveInfo = encryption.encrypt(ctx.request.body.sensitiveInfo, constants.EX2_ENCRYPTION_KEY)
+    await ctx.app.sensitiveData.remove({});
+    const {ops} = await ctx.app.sensitiveData.insert({value: sensitiveInfo});
+    ctx.body = ops
+});
 
+router.post('/ex2/generateToken', async (ctx) => {
+    const stringified = encryption.stringifyToken(ctx.request.body)
+    const {ops} = await ctx.app.secrets.insertOne(
+        {token: stringified}
+    )
+    const parsed = encryption.parseToken(stringified)
+    parsed['tokenId'] = ops[0]._id
+    ctx.body = { stringified, parsed }
+})
+
+router.get('/ex2/sensitiveData/:token', async (ctx) => {
+    const tokenId = ctx.query.tokenId
+   const tokens = await ctx.app.secrets.find().toArray()
+   const matchingToken = tokens.filter(x => { 
+       return tokenId === x._id.toString() })[0]
+   if (!matchingToken) {
+      ctx.body = { message: 'token invalid'}
+      return
+   }
+   const parsedToken = encryption.parseToken(matchingToken.token)
+   const { oneTime, expiration } = parsedToken
+   if (moment().isAfter(moment(expiration))) {
+       ctx.body = { message: 'token expired' }
+       return
+   } 
+   const items = await ctx.app.sensitiveData.find().toArray()
+   ctx.body = { value: encryption.decrypt(items[0].value, constants.EX2_ENCRYPTION_KEY) }
+   if (oneTime) {
+       ctx.app.secrets.remove({"_id": ObjectID(tokenId)})
+   }
+})
 
 app.use(router.routes()).use(router.allowedMethods());
 
