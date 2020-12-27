@@ -20,37 +20,61 @@
 
 all calls not starting with ex2 require a decryption-token header (must match the user's password field in order to decrypt the data)
   
-post /uploadResume
+#### post /uploadResume
+
 body: formData with { file: {File Object} }
+
 description: uploads a resume 
 
-get /downloadResume/:id/:fileName
+
+#### get /downloadResume/:id/:fileName
+
 path params: id - the resumeId, fileName - the name of the file
+
 description: downloads the decrypted resume locally
 
-get /user/findAll
+
+#### get /user/findAll
+
 description: gets all users in db
 
-put /user/:id
+
+#### put /user/:id
+
 path params: id - user id
+
 body: { name, email, resumeId, resumeName }
+
 description: updates the user with the fields
 
-post /user
+
+#### post /user
+
 body: { name, email, resumeId, resumeName }
+
 desc: creates user with the fields
 
-post /ex2/sensitiveData
+
+#### post /ex2/sensitiveData
+
 body: { value }
+
 desc: gets the currently stored senstive Data (stored as a singleton)
 
-post /ex2/generateToken
+
+#### post /ex2/generateToken
+
 body: { expiration, oneTime }
+
 desc: creates a token and stores it in the db, returning both the encrypted string and the metadata (including obj id) of the token.  
 
-get /ex2/sensitiveData/:token?tokenId
+
+#### get /ex2/sensitiveData/:token?tokenId
+
 path params: token - the encrypted token containing metadata about the token
+
 query params: tokenId - the id of the token used for decryption
+
 description - this attempts to decrypt the sensitive data singleton saved and returns the cleartext string 
   
 
