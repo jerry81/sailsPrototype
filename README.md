@@ -2,12 +2,11 @@
 
  nodejs web server with mongo driver
 
- prerequisite - a locally running mongo db server
+ prerequisite - docker desktop installed
 
 ### running instructions
-  0. yarn
-  1. nav to src folder
-  2. node ./controller/server.js
+  0. navigate to ./trustanaKoaJs
+  1. docker-compose -f ./docker-compose.yml up 
 
 ### explanation
 
@@ -81,7 +80,7 @@ description - this attempts to decrypt the sensitive data singleton saved and re
 ### TODO
 
   1.  unit tests
-  2.  deployment (dockerfile, k8s yamls)
+  2.  deployment (dockerfile, k8s yamls) - update 1/5 DONE
   3.  modularization of controllers and routes
   4.  Move resumes out of mongo to OSS/S3
   5.  hide the hardcoded encryption key for sensitive data in exercise 2 from source code

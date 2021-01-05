@@ -1,0 +1,36 @@
+version: '3'
+services:
+  mongodb:
+    container_name: trustana-mongodb
+    image: mongo:4
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: trustana
+    volumes:
+      - mongo_data:/data/db
+      - "$PWD/src/conf/:/docker-entrypoint-initdb.d/"
+    networks:
+      - network
+  koa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: trustanaAdmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    networks:
+      - network
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:
+
+networks:
+  network:
