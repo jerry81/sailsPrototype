@@ -8,6 +8,11 @@
   0. navigate to ./trustanaKoaJs
   1. docker-compose -f ./docker-compose.yml up 
 
+  Testing 
+
+  0. navigate to ./trustanaKoaJs
+  1. docker-compose -f ./docker-compose.test.yml up
+
 ### explanation
 
   1.  since the free version of mongodb does not support db at rest encryption, application level encryption was used, using node native crypto library. 
@@ -79,7 +84,7 @@ description - this attempts to decrypt the sensitive data singleton saved and re
 
 ### TODO
 
-  1.  unit tests
+  1.  unit tests - update 1/6 DONE
   2.  deployment (dockerfile, k8s yamls) - update 1/5 DONE
   3.  modularization of controllers and routes
   4.  Move resumes out of mongo to OSS/S3
