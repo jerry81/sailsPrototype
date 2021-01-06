@@ -31,13 +31,17 @@ function encrypt(text, key) {
 }
 
 function decrypt(text, key, isFile) {
-    if (!text.encryptedData && !isFile) return text
-    if (!key) return 'cannot decrypt'
-    let encryptedText = Buffer.from(isFile ? text : text.encryptedData, 'hex');
-    let decipher = crypto.createDecipher('aes-256-cbc', Buffer.from(key));
-    let decrypted = decipher.update(encryptedText);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
-    return decrypted.toString();
+    try {
+      if (!text.encryptedData && !isFile) return text
+      if (!key) return 'cannot decrypt'
+      let encryptedText = Buffer.from(isFile ? text : text.encryptedData, 'hex');
+      let decipher = crypto.createDecipher('aes-256-cbc', Buffer.from(key));
+      let decrypted = decipher.update(encryptedText);
+      decrypted = Buffer.concat([decrypted, decipher.final()]);
+      return decrypted.toString();
+    } catch(e) {
+        return 'cannot decrypt'
+    }
 }
 
 function stringifyToken(request) {

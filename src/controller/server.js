@@ -45,7 +45,7 @@ router.get('/downloadResume/:id/:fileName', async ctx => {
         let params = ctx.params
         let documentQuery = {"_id": ObjectID(params.id)}; // Used to find the document
         const file = await ctx.app.files.find(documentQuery).toArray();
-        const path = `../temp/${params.fileName}`
+        const path = `./${params.fileName}`
         const decryptedBuffer = encryption.decrypt(file[0].file_data.buffer.toString(), password, true)
         await fs.writeFileSync(path, decryptedBuffer)
         const rs = await fs.createReadStream(path)
