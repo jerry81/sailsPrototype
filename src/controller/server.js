@@ -122,4 +122,6 @@ router.get('/ex2/sensitiveData/:token', async (ctx) => {
 
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(3000);
+const server = app.listen(3000);
+
+module.exports = server

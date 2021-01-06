@@ -1,11 +1,10 @@
-const MongoClient = new require('mongodb').MongoClient;
+const MongoClient = require('mongodb').MongoClient;
 const USERNAME = process.env.MONGO_INITDB_ROOT_USERNAME || 'admin'
 const PASSWORD = process.env.MONGO_INITDB_ROOT_PASSWORD || 'admin'
-console.log('userName password are ', process.env.MONGO_INITDB_ROOT_USERNAME, process.env.MONGO_INITDB_ROOT_PASSWORD)
-const DBHOST = 'mongodb'
+const DBHOST = process.env.MONGO_DB_HOST || 'mongodb'
 const DBPORT = '27017'
-const DBNAME = 'trustana'
-const MONGO_URL=`${DBHOST}://${USERNAME}:${PASSWORD}@${DBHOST}:${DBPORT}/${DBNAME}`
+const DBNAME = process.env.MONGO_DB_NAME || 'trustana'
+const MONGO_URL=`mongodb://${USERNAME}:${PASSWORD}@${DBHOST}:${DBPORT}/${DBNAME}`
 function attemptConnect (app) {
     const interval = setInterval(() => {
         MongoClient.connect(MONGO_URL, (err, client) => {

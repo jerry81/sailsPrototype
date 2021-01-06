@@ -1,0 +1,35 @@
+version: '3'
+services:
+  mongodbTest:
+    container_name: trustana-mongodb-test
+    image: mongo:4
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: trustanaTest
+    volumes:
+      - "$PWD/test/conf/:/docker-entrypoint-initdb.d/"
+    networks:
+      - testnetwork
+  testkoa:
+    build:
+      context: .
+      dockerfile: Dockerfile-Test
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: trustanaAdmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_DB_NAME: trustanaTest
+      MONGO_DB_HOST: mongodbTest
+    networks:
+      - testnetwork
+    depends_on:
+      - mongodbTest
+
+volumes:
+  mongo_data_test:
+
+networks:
+  testnetwork:
